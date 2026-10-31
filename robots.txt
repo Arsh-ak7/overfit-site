@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://arsh-ak7.github.io/overfit-site/sitemap.xml
