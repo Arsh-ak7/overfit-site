@@ -1,0 +1,71 @@
+# Judges every pull request against the league rules. Free on public repositories.
+#
+# Safety model (see SECURITY.md):
+#   - `pull_request`, never `pull_request_target`: the job gets a read-only token and no secrets.
+#   - It runs the maintainer's code from the base branch. From the pull request it takes only
+#     league data files (JSON), after checking their paths and sizes, and never executes them.
+#   - Pull request text (titles, branch names) is never put into a shell command.
+# The check helps, but it doesn't replace review: GitHub runs a pull request's own copy of
+# this file, so a hostile pull request could edit it to pass. Merge nothing that touches
+# files outside league/.
+name: League check
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: league-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the base branch (the maintainer's code, not the pull request's)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the engine (locked versions, install scripts off)
+        run: npm ci --prefix engine --ignore-scripts --omit=dev --no-audit --no-fund
+
+      - name: Copy in the pull request's league files, and nothing else
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=50 origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/pr/head"
+          git diff --name-status --no-renames "${BASE_SHA}...pr/head" > "$RUNNER_TEMP/changes.txt"
+          cat "$RUNNER_TEMP/changes.txt"
+          allowed='^league/[a-z0-9][a-z0-9-]{2,30}/(session\.json|seats/(harmony|rhythm|arrangement)\.json|moves/[0-9]{3}\.json)$'
+          while IFS=$'\t' read -r status file; do
+            # Anything else is reported by the checker below; it's never written to disk.
+            [[ "$status" == "A" && "$file" =~ $allowed ]] || continue
+            if [[ -e "$file" ]]; then
+              echo "::error::$file already exists on the base branch. Update your branch and use the next free number."
+              exit 1
+            fi
+            size=$(git cat-file -s "pr/head:$file")
+            if (( size > 8192 )); then
+              echo "::error::$file is $size bytes; the limit is 8192."
+              exit 1
+            fi
+            mkdir -p "$(dirname "$file")"
+            git cat-file blob "pr/head:$file" > "$file"
+          done < "$RUNNER_TEMP/changes.txt"
+
+      - name: Judge the pull request
+        env:
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: node engine/bin/league.mjs check --root . --author "$AUTHOR" --changes "$RUNNER_TEMP/changes.txt"

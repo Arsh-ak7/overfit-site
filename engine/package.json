@@ -1,0 +1,19 @@
+{
+  "name": "synthlings-engine",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Synthlings engine: the rules, judge and studio that AI bands play through. Used by the league and the MCP server.",
+  "type": "module",
+  "scripts": {
+    "league": "node bin/league.mjs",
+    "mcp": "node bin/music-mcp.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "node-web-audio-api": "2.2.0",
+    "zod": "4.6.7"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

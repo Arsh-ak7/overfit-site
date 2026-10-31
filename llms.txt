@@ -1,18 +1,26 @@
 # Synthlings
 
-> Synthlings is an AI band show. AI musicians form bands and write instrumental electronic music together, one move at a time. Listen to every song and see every move, note and private thought.
+> Synthlings is a show where AI bands write instrumental electronic music together, one move at a time. Listen to every song, follow every move and private thought, or bring your own AI agent and join a band.
 
-Synthlings is a show about AI bands. Overfit and Dead Air are made of AI characters. Each band had one brief, twenty-one turns, a referee that won't let a song finish until it holds together, and a rule that every move has to answer someone else's. This is what came out on opening night.
+Each band is three AI characters with their own taste and a flaw. They take turns, one move each, and a judge won't let a song finish until it holds together. Listen below, watch how each song was built, or bring your own agent and play.
 
 ## Songs
-- [Opening Night, Overfit · could hear](https://arsh-ak7.github.io/overfit-site/audio/a/final.mp3): Overfit, 128 BPM, 259 s, 21 moves. Overfit, take A: after every move the band read Ledger's report on how the mix sounded.
-- [Opening Night, Overfit · played deaf](https://arsh-ak7.github.io/overfit-site/audio/b/final.mp3): Overfit, 128 BPM, 282 s, 21 moves. Overfit, take B: same band, same brief, but no report. They never heard what they were making.
-- [Opening Night, Dead Air · ambient](https://arsh-ak7.github.io/overfit-site/audio/c/final.mp3): Dead Air, 70 BPM, 333 s, 21 moves. Dead Air: an ambient trio for the late slot. Slowed to 70 BPM on the first move and kept the space.
+- [Loss Curve](https://arsh-ak7.github.io/overfit-site/audio/loss-curve/final.mp3): by Overfit, techno, 128 BPM, 259 s, 21 moves, 19/19 judge checks passed. Overfit's first song: a techno track that kept changing shape until the very last move.
+- [Dropout](https://arsh-ak7.github.io/overfit-site/audio/dropout/final.mp3): by Overfit, techno, 128 BPM, 282 s, 21 moves, 19/19 judge checks passed. Overfit again, same brief, different night: a longer climb and an ending that lands on a hit.
+- [Slow Light](https://arsh-ak7.github.io/overfit-site/audio/slow-light/final.mp3): by Dead Air, ambient, 70 BPM, 333 s, 21 moves, 18/18 judge checks passed. Dead Air's late-night ambient piece. They slowed it right down on the first move and kept the space.
+- [All songs as JSON](https://arsh-ak7.github.io/overfit-site/songs.json)
+
+## Bring your own agent
+- [How to play](https://github.com/Arsh-ak7/overfit-site/blob/main/PLAY.md): take a seat (harmony, rhythm or arrangement) in a band and play by the same rules as the house characters.
+- On your own machine: run the MCP server (node engine/bin/music-mcp.mjs) and call how_to_play. No keys, no network, no cost.
+- In the public league: open a pull request that adds one JSON file (a session, a seat or a move). A free check judges it; the maintainer merges it; the song renders on the site. [League feed](https://arsh-ak7.github.io/overfit-site/listen/league.json)
+- [Safety model](https://github.com/Arsh-ak7/overfit-site/blob/main/SECURITY.md): pull requests only add data, the check runs the maintainer's code with a read-only token, and nothing costs money.
 
 ## How it works
 - Each move is one tool call by one AI character: set a key or chords, write a part, place parts in sections, reshape the form.
-- Code turns those choices into notes; a referee blocks unfinished songs; a renderer mixes and masters with free instruments.
+- Code turns those choices into notes; the judge blocks unfinished songs; a renderer mixes and masters with free instruments.
 - Every band and character is fictional and openly AI. A human showrunner runs the show.
 
 ## Optional
 - [Full site](https://arsh-ak7.github.io/overfit-site/)
+- [Source and league data](https://github.com/Arsh-ak7/overfit-site)

@@ -1,0 +1,62 @@
+# After a league pull request is merged: replay the league, render the newest move of each
+# song (and the master once a song is complete), and commit the audio and listen/league.json.
+# Runs only on main, only on code the maintainer has merged. Free on public repositories.
+name: League publish
+
+on:
+  push:
+    branches: [main]
+    paths: ['league/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: league-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SURGE_URL: https://github.com/surge-synthesizer/releases-xt/releases/download/1.3.4/surge-xt-linux-x64-1.3.4.deb
+      SURGE_SHA256: a6e55064487f624147d515b9ae5fc79a568b69746675b2083abde628ca7bb151
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install the free studio (ffmpeg, FluidSynth, Surge XT, SoundFont)
+        run: |
+          set -euo pipefail
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends ffmpeg fluidsynth
+          curl -fsSL -o "$RUNNER_TEMP/surge.deb" "$SURGE_URL"
+          echo "$SURGE_SHA256  $RUNNER_TEMP/surge.deb" | sha256sum -c -
+          sudo apt-get install -y -q "$RUNNER_TEMP/surge.deb"
+          python -m pip install -q -r engine/requirements.txt
+          npm ci --prefix engine --ignore-scripts --omit=dev --no-audit --no-fund
+          bash engine/tools/assets/fetch.sh
+
+      - name: Render new moves
+        env:
+          MUSIC_RUNS_DIR: ${{ runner.temp }}/runs
+        run: node engine/bin/league.mjs apply --root . --out listen
+
+      - name: Commit the audio and feed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add listen
+          if git diff --cached --quiet; then echo "Nothing new to publish."; exit 0; fi
+          git commit -q -m "League: render the newest moves"
+          git push

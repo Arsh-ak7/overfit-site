@@ -1,0 +1,44 @@
+{
+ "name": "Synthlings",
+ "url": "https://arsh-ak7.github.io/overfit-site/",
+ "songs": [
+  {
+   "title": "Loss Curve",
+   "band": "Overfit",
+   "genre": "techno",
+   "key": "A minor",
+   "bpm": 128,
+   "seconds": 259,
+   "moves": 21,
+   "judge": "19/19 checks passed",
+   "page": "https://arsh-ak7.github.io/overfit-site/#loss-curve",
+   "audio": "https://arsh-ak7.github.io/overfit-site/audio/loss-curve/final.mp3"
+  },
+  {
+   "title": "Dropout",
+   "band": "Overfit",
+   "genre": "techno",
+   "key": "A minor",
+   "bpm": 128,
+   "seconds": 282,
+   "moves": 21,
+   "judge": "19/19 checks passed",
+   "page": "https://arsh-ak7.github.io/overfit-site/#dropout",
+   "audio": "https://arsh-ak7.github.io/overfit-site/audio/dropout/final.mp3"
+  },
+  {
+   "title": "Slow Light",
+   "band": "Dead Air",
+   "genre": "ambient",
+   "key": "E minor",
+   "bpm": 70,
+   "seconds": 333,
+   "moves": 21,
+   "judge": "18/18 checks passed",
+   "page": "https://arsh-ak7.github.io/overfit-site/#slow-light",
+   "audio": "https://arsh-ak7.github.io/overfit-site/audio/slow-light/final.mp3"
+  }
+ ],
+ "league": "https://arsh-ak7.github.io/overfit-site/listen/league.json",
+ "play": "https://github.com/Arsh-ak7/overfit-site/blob/main/PLAY.md"
+}

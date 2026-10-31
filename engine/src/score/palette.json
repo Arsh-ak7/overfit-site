@@ -1,0 +1,192 @@
+{
+  "about": "Sounds agents can pick. Each entry records its source and licence. Surge patches were chosen by measurement (tools/palette/audition.py): plays the given pitch, no chord memory, no built-in sequencer. Nobody has listened to them yet.",
+  "licences": {
+    "surge": "Surge XT 1.3.4 factory and third-party patches, GPL-3 (the package licence). Rendered audio is our output and isn't covered by the GPL.",
+    "gm": "GeneralUser GS 2.0.3 by S. Christian Collins: free for any music use, including commercial. The author notes he can't vouch for every sample's origin.",
+    "synth": "Generated in code (src/studio/fx.py). Ours."
+  },
+  "sounds": {
+    "bass.sub": {
+      "engine": "surge",
+      "patch": "Basses/Sub 2",
+      "role": "bass",
+      "level": -3,
+      "desc": "pure sub, felt more than heard"
+    },
+    "bass.rolling": {
+      "engine": "surge",
+      "patch": "Basses/Bass 5",
+      "role": "bass",
+      "level": -2,
+      "desc": "tight analog bass for rolling techno lines"
+    },
+    "bass.rubber": {
+      "engine": "surge",
+      "patch": "Basses/Rubber Bass",
+      "role": "bass",
+      "level": -4,
+      "desc": "round bass with midrange, audible on phones"
+    },
+    "bass.square": {
+      "engine": "surge",
+      "patch": "Basses/Square Bass",
+      "role": "bass",
+      "level": -6,
+      "desc": "short punchy square bass"
+    },
+    "bass.analog": {
+      "engine": "surge",
+      "patch": "Basses/Bass 1",
+      "role": "bass",
+      "level": -5,
+      "desc": "warm sustained analog bass"
+    },
+    "stab.pluck": {
+      "engine": "surge",
+      "patch": "Plucks/Trancy",
+      "role": "chords",
+      "level": -4,
+      "desc": "short trance pluck for chord stabs"
+    },
+    "stab.saw": {
+      "engine": "surge",
+      "patch": "Plucks/Saw Pluck",
+      "role": "chords",
+      "level": -6,
+      "desc": "bright saw pluck"
+    },
+    "pad.warm": {
+      "engine": "surge",
+      "patch": "Pads/MKS-70 Warm Pad",
+      "role": "chords",
+      "level": -3,
+      "desc": "wide warm analog pad"
+    },
+    "pad.bright": {
+      "engine": "surge",
+      "patch": "Pads/Bright",
+      "role": "chords",
+      "level": -6,
+      "desc": "bright slow pad"
+    },
+    "pad.saw": {
+      "engine": "surge",
+      "patch": "Inigo Kennedy/Saw Pad 1",
+      "role": "chords",
+      "level": -4,
+      "desc": "detuned saw pad"
+    },
+    "lead.supersaw": {
+      "engine": "surge",
+      "patch": "Inigo Kennedy/Happy Saws",
+      "role": "lead",
+      "level": -2,
+      "desc": "detuned supersaw lead"
+    },
+    "lead.classic": {
+      "engine": "surge",
+      "patch": "Leads/Classic Lead 1",
+      "role": "lead",
+      "level": -10,
+      "desc": "mono analog lead"
+    },
+    "lead.acid": {
+      "engine": "surge",
+      "patch": "Leads/Acidofil",
+      "role": "lead",
+      "level": -4,
+      "desc": "resonant acid line"
+    },
+    "arp.pluck": {
+      "engine": "surge",
+      "patch": "Plucks/Nice Pluck 2",
+      "role": "chords",
+      "level": -4,
+      "desc": "bright wide pluck for arps"
+    },
+    "arp.soft": {
+      "engine": "surge",
+      "patch": "Plucks/Nice Pluck 1",
+      "role": "chords",
+      "level": -4,
+      "desc": "softer pluck"
+    },
+    "keys.ep": {
+      "engine": "surge",
+      "patch": "Keys/EP 1",
+      "role": "chords",
+      "level": -2,
+      "desc": "electric piano"
+    },
+    "keys.organ": {
+      "engine": "surge",
+      "patch": "Keys/House Organ",
+      "role": "chords",
+      "level": -10,
+      "desc": "classic house organ"
+    },
+    "bell": {
+      "engine": "surge",
+      "patch": "Plucks/Bell 1",
+      "role": "lead",
+      "level": -6,
+      "desc": "clear bell"
+    },
+    "keys.piano": {
+      "engine": "gm",
+      "program": 0,
+      "role": "chords",
+      "level": 0,
+      "desc": "acoustic grand piano"
+    },
+    "strings": {
+      "engine": "gm",
+      "program": 48,
+      "role": "chords",
+      "level": 0,
+      "desc": "string ensemble"
+    },
+    "drums.909": {
+      "engine": "gmdrums",
+      "program": 25,
+      "role": "drums",
+      "level": 0,
+      "desc": "808/909 drum machine kit"
+    },
+    "drums.dance": {
+      "engine": "gmdrums",
+      "program": 26,
+      "role": "drums",
+      "level": 0,
+      "desc": "dance kit"
+    },
+    "drums.electronic": {
+      "engine": "gmdrums",
+      "program": 24,
+      "role": "drums",
+      "level": 0,
+      "desc": "electronic kit"
+    },
+    "drums.acoustic": {
+      "engine": "gmdrums",
+      "program": 8,
+      "role": "drums",
+      "level": 0,
+      "desc": "acoustic room kit"
+    },
+    "drums.jazz": {
+      "engine": "gmdrums",
+      "program": 32,
+      "role": "drums",
+      "level": 0,
+      "desc": "jazz kit, good for lo-fi"
+    },
+    "fx.riser": {
+      "engine": "synth",
+      "kind": "riser",
+      "role": "fx",
+      "level": -6,
+      "desc": "noise riser that builds into a section"
+    }
+  }
+}

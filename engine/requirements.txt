@@ -1,0 +1,9 @@
+# Runtime: hearing report, analysis tools and the studio renderer (src/studio).
+librosa==1.0.0
+numpy==2.5.3
+scipy==1.18.1
+soundfile==0.14.0
+pedalboard==0.9.26
+mido==1.3.3
+pyloudnorm==0.2.0
+# System packages: ffmpeg, fluidsynth (apt), Surge XT 1.3.4 (.deb). See tools/assets/fetch.sh.

@@ -1,0 +1,7 @@
+# Keeps the workflow actions up to date. Free; opens pull requests you review.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
