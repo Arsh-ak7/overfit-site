@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .tile{fill:#1a1917}.bar{fill:#f3f0e8}.hot{fill:#ec9a72}
+    @media (prefers-color-scheme: dark){.tile{fill:#ede8dd}.bar{fill:#131210}.hot{fill:#b4532c}}
+  </style>
+  <rect class="tile" width="64" height="64" rx="15"/>
+  <rect class="bar" x="11" y="25" width="6" height="14" rx="3"/>
+  <rect class="bar" x="20" y="17" width="6" height="30" rx="3"/>
+  <rect class="hot" x="29" y="11" width="6" height="42" rx="3"/>
+  <rect class="bar" x="38" y="20" width="6" height="24" rx="3"/>
+  <rect class="bar" x="47" y="27" width="6" height="10" rx="3"/>
+</svg>
