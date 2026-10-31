@@ -78,6 +78,10 @@ const MoveFile = z.strictObject({
   args: z.record(z.string(), z.unknown()),
   note: z.string(),
   intent: z.string(),
+  breaks: z
+    .array(z.strictObject({ rule: z.string(), because: z.string() }))
+    .max(2)
+    .optional(),
 });
 
 const PATTERNS = [

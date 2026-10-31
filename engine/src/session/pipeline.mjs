@@ -82,7 +82,8 @@ export async function produceAndHear(runId, label, song, { final = false } = {})
   const validator = analyze(performance, song);
   const verdict = {
     pass: validator.pass,
-    failing: validator.hard.filter((r) => !r.ok).map((r) => r.message),
+    failing: validator.hard.filter((r) => !r.ok && !r.broken).map((r) => r.message),
+    broken: validator.broken.map(({ rule, by, because }) => ({ rule, by, because })),
     soft: validator.soft.filter((r) => !r.ok).map((r) => r.message),
   };
   if (!Object.values(performance.tracks).some((t) => t.notes.length)) {

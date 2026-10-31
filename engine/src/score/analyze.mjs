@@ -56,6 +56,14 @@ function rule(list, id, ok, message, detail) {
 }
 
 /**
+ * The quality floor: no song finishes without these. Every other hard rule is a
+ * convention of the genre, which a character may break on purpose (see CONVENTIONS
+ * and song.breaks): the judge then records the break and its reason instead of failing.
+ */
+export const FLOOR = new Set(['tempo', 'key', 'chords_chosen', 'sections', 'duration', 'keeps_changing']);
+export const isConvention = (id) => !FLOOR.has(id);
+
+/**
  * @param {import('./derive.mjs').Performance} perf
  * @param {{ genre?: string, swing?: number }} [song] declared song fields, when available
  */
@@ -337,15 +345,26 @@ export function analyze(perf, song = {}) {
     rule(soft, 'lead_range', range <= 24, `The lead spans ${range} semitones; keep phrases within about two octaves.`);
   }
 
-  const failed = hard.filter((r) => !r.ok);
+  // A failing convention that a character broke on purpose doesn't fail the song.
+  const breaks = new Map((song.breaks ?? []).map((b) => [b.rule, b]));
+  for (const r of hard) {
+    r.kind = FLOOR.has(r.id) ? 'floor' : 'convention';
+    if (!r.ok && r.kind === 'convention' && breaks.has(r.id)) {
+      const { by, because } = breaks.get(r.id);
+      r.broken = { by, because };
+    }
+  }
+  const failed = hard.filter((r) => !r.ok && !r.broken);
+  const broken = hard.filter((r) => r.broken).map((r) => ({ rule: r.id, ...r.broken, message: r.message }));
   return {
     pass: failed.length === 0,
     hard,
     soft,
+    broken,
     stats: { seconds: Math.round(seconds), bars: perf.totalBeats / BAR, sections: sections.length, roleCoverage },
     summary: failed.length
       ? `Not finished: ${failed.length} rule${failed.length > 1 ? 's' : ''} failing. ${failed.map((r) => r.message).join(' ')}`
-      : `All ${hard.length} hard rules pass.${
+      : `All ${hard.length} hard rules pass${broken.length ? ` (${broken.length} broken on purpose)` : ''}.${
           soft.some((r) => !r.ok)
             ? ` Notes: ${soft
                 .filter((r) => !r.ok)

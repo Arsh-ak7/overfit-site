@@ -7,7 +7,9 @@
 import { BASS_STYLES, LIMITS, TRANSITIONS, VARIANTS, soundsFor } from '../score/schema.mjs';
 import { FILLS, GENRES, GROOVES, PROGRESSIONS } from '../score/library.mjs';
 import palette from '../score/palette.json' with { type: 'json' };
-import { TERRITORY_OF_ROLE } from './rules-v2.mjs';
+import { analyze } from '../score/analyze.mjs';
+import { derive } from '../score/derive.mjs';
+import { TERRITORY_OF_ROLE, WILDCARDS_PER_CHARACTER } from './rules-v2.mjs';
 
 const TERRITORY_TEXT = {
   harmony: 'key and mode, chord progressions, chord parts (pads, stabs, arps), the hook (lead) and counter-melodies',
@@ -93,15 +95,17 @@ export function agentViewV2(state, agentName, { runId, submitHint }) {
     '',
     `## Turn ${state.turns.length + 1} of ${total}. ${whose}`,
     state.deleteRequired &&
-      '**This turn must remove something**: delete a part, section or progression, or take a part out of a section with set_play remove (delete quota: one turn in four).',
+      '**This turn must remove something**: delete a part, section or progression, or take a part out of a section with set_play remove (delete quota: one turn in four). A move that fixes a failing judge check also counts.',
     myLast && `Your last move: [${myLast.tool}: ${myLast.summary}] "${myLast.note}"`,
     '',
-    '## The referee (validator). The song cannot be finished until every hard rule passes',
-    validator
-      ? validator.pass
-        ? 'All hard rules pass.'
-        : validator.failing.map((m) => `- ${m}`).join('\n')
-      : '- (not checked yet)',
+    '## The judge. The song cannot finish until every check passes or is broken on purpose',
+    validator ? judgeLines(song) : '- (not checked yet)',
+    '',
+    `## Wildcards: you may break a convention on purpose (${WILDCARDS_PER_CHARACTER} per character per song, ${WILDCARDS_PER_CHARACTER - (song.breaks ?? []).filter((b) => b.by === agentName).length} left for you)`,
+    'Add to any move: "breaks": [{"rule": "<convention id>", "because": "<public reason, 10-200 chars>"}]. The judge then records the break instead of failing the song, and viewers see your reason. Only conventions can be broken, never the floor. Break a convention when it makes the song better, not to dodge work.',
+    (song.breaks ?? []).length
+      ? (song.breaks ?? []).map((b) => `- ${b.rule} broken by ${b.by}: "${b.because}"`).join('\n')
+      : '- (no conventions broken yet)',
     '',
     '## Rules',
     `- One tool call per turn, inside your territory. At most ${LIMITS.activePerSection} parts play in any section (drums count as one).`,
@@ -142,5 +146,17 @@ export function agentViewV2(state, agentName, { runId, submitHint }) {
       `Write the JSON to a file and run: node bin/music.mjs session turn ${runId} --agent ${agentName} --file <file>`,
   ]
     .filter((line) => line !== false && line !== undefined && line !== null)
+    .join('\n');
+}
+
+/** Every failing check with its id, and whether it's the floor or a breakable convention. */
+function judgeLines(song) {
+  const v = analyze(derive(song), song);
+  const failing = v.hard.filter((r) => !r.ok && !r.broken);
+  if (!failing.length) {
+    return `All ${v.hard.length} checks pass${v.broken.length ? ` (${v.broken.length} broken on purpose)` : ''}.`;
+  }
+  return failing
+    .map((r) => `- [${r.id}, ${r.kind === 'floor' ? 'floor: must pass' : 'convention: breakable'}] ${r.message}`)
     .join('\n');
 }

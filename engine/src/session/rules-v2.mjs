@@ -10,7 +10,7 @@
  * the spike showed "rewrite" satisfies a softer quota every time.
  */
 import { RuleError, ValidationError } from '../errors.mjs';
-import { analyze } from '../score/analyze.mjs';
+import { analyze, isConvention } from '../score/analyze.mjs';
 import { derive } from '../score/derive.mjs';
 import { GENRES, PROGRESSIONS } from '../score/library.mjs';
 import { validateSongV2 } from '../score/schema.mjs';
@@ -39,6 +39,9 @@ const DESTRUCTIVE = new Set(['delete_part', 'delete_section', 'delete_progressio
 const NOTE_LENGTH = [20, 400];
 const INTENT_LENGTH = [10, 600];
 // Public text on a public show: no links, so no spam or phishing in notes.
+/** Each character may break this many genre conventions per song, on purpose and with a reason. */
+export const WILDCARDS_PER_CHARACTER = 2;
+const BECAUSE_LENGTH = [10, 200];
 const HAS_LINK = /https?:\/\/|www\.|\.(com|net|org|io|ai|xyz)\b/i;
 const OPENS_WITH_PRAISE = /^\s*(great|nice|love|loving|awesome|amazing|perfect|beautiful|cool|wow|sick|fire)\b/i;
 
@@ -314,8 +317,8 @@ export function applyTurnV2(state, agentName, submission) {
   if (state.nextAgent !== agentName) throw new RuleError(`it is ${state.nextAgent}'s turn, not ${agentName}'s`);
   if (!submission || typeof submission !== 'object') throw new RuleError('submission must be a JSON object');
   for (const key of Object.keys(submission)) {
-    if (!['tool', 'args', 'note', 'intent'].includes(key)) {
-      throw new RuleError(`unknown field '${key}': send { tool, args, note, intent }`);
+    if (!['tool', 'args', 'note', 'intent', 'breaks'].includes(key)) {
+      throw new RuleError(`unknown field '${key}': send { tool, args, note, intent } and optionally breaks`);
     }
   }
   if (!TOOLS.includes(submission.tool)) throw new RuleError(`tool must be one of ${TOOLS.join(', ')}`);
@@ -324,15 +327,21 @@ export function applyTurnV2(state, agentName, submission) {
 
   const song = clone(state.song);
   const outcome = TOOL_HANDLERS[submission.tool](song, submission.args ?? {}, owns);
+  const declared = applyBreaks(song, agentName, submission.breaks);
   const destructive = DESTRUCTIVE.has(submission.tool) || (outcome.removed ?? 0) > 0;
-  if (state.deleteRequired && !destructive) {
-    throw new RuleError(
-      'delete quota: none of the last three turns removed anything, so this turn must delete a part, section or progression, or take a part out of a section (set_play remove)',
-    );
-  }
   if (same(song, state.song)) throw new RuleError('that move changes nothing');
   validateSongV2(song);
   const validator = analyze(derive(song), song);
+  if (state.deleteRequired && !destructive) {
+    // A move that fixes a failing check always counts: the quota must never block a repair.
+    const before = analyze(derive(state.song), state.song);
+    const failing = (v) => v.hard.filter((r) => !r.ok && !r.broken).length;
+    if (!(failing(validator) < failing(before))) {
+      throw new RuleError(
+        'delete quota: none of the last three turns removed anything, so this turn must delete a part, section or progression, take a part out of a section (set_play remove), or fix a failing judge check',
+      );
+    }
+  }
   return {
     tool: submission.tool,
     args: submission.args ?? {},
@@ -342,6 +351,48 @@ export function applyTurnV2(state, agentName, submission) {
     intent,
     submitted: submission,
     songAfter: song,
-    validator: { pass: validator.pass, failing: validator.hard.filter((r) => !r.ok).map((r) => r.message) },
+    breaks: declared,
+    validator: {
+      pass: validator.pass,
+      failing: validator.hard.filter((r) => !r.ok && !r.broken).map((r) => r.message),
+      broken: validator.broken.map(({ rule, by, because }) => ({ rule, by, because })),
+    },
   };
+}
+
+/**
+ * Wildcards: a move may break genre conventions on purpose, e.g.
+ *   "breaks": [{ "rule": "transition_peak", "because": "a hard cut into the peak hits harder" }]
+ * The judge then records the break and its public reason instead of failing the song.
+ * The quality floor can't be broken, and each character has WILDCARDS_PER_CHARACTER.
+ * @returns {{ rule: string, because: string }[]} the breaks this move declared
+ */
+function applyBreaks(song, agentName, breaks) {
+  if (breaks === undefined) return [];
+  if (!Array.isArray(breaks) || breaks.length > WILDCARDS_PER_CHARACTER) {
+    throw new RuleError(`breaks must be a list of at most ${WILDCARDS_PER_CHARACTER} { rule, because } objects`);
+  }
+  song.breaks = [...(song.breaks ?? [])];
+  const declared = [];
+  for (const b of breaks) {
+    if (!b || typeof b !== 'object' || typeof b.rule !== 'string' || typeof b.because !== 'string') {
+      throw new RuleError('each break is { "rule": "<check id>", "because": "<public reason>" }');
+    }
+    if (!isConvention(b.rule)) {
+      throw new RuleError(`'${b.rule}' is part of the quality floor (or not a check), so it can't be broken`);
+    }
+    const because = b.because.trim();
+    if (because.length < BECAUSE_LENGTH[0] || because.length > BECAUSE_LENGTH[1]) {
+      throw new RuleError(`a break's reason must be ${BECAUSE_LENGTH.join('-')} characters`);
+    }
+    if (HAS_LINK.test(because)) throw new RuleError("a break's reason can't contain links");
+    if (song.breaks.some((x) => x.rule === b.rule)) throw new RuleError(`'${b.rule}' is already broken`);
+    const used = song.breaks.filter((x) => x.by === agentName).length;
+    if (used >= WILDCARDS_PER_CHARACTER) {
+      throw new RuleError(`you've used all ${WILDCARDS_PER_CHARACTER} of your wildcards in this song`);
+    }
+    song.breaks.push({ rule: b.rule, by: agentName, because });
+    declared.push({ rule: b.rule, because });
+  }
+  return declared;
 }

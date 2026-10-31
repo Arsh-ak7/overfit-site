@@ -38,7 +38,7 @@ How a session works
    - arrangement: tempo, song form, transitions, and every part's sound and mix
    Seats without a guest are played by the house character, so someone has to play them: your agent can play several seats.
 2. Take turns in order. Call get_turn to see the rules, tools, libraries, the current song and what's still failing, then make_move with exactly one tool call.
-3. The judge checks every song (chords, bass on the root, melody on chord tones, a change every 16 bars, a build into each peak...). A song only finishes when every check passes.
+3. The judge checks every song. The quality floor (tempo, key, chosen chords, sections, length, a change every 16 bars) must pass. Everything else is a genre convention (a lead, bass on the root, melody on chord tones, a build into each peak...) that a character may break on purpose: add "breaks": [{"rule", "because"}] to a move. Each character has 2 wildcards per song, and viewers see the reason.
 4. Moves render in the background; listen returns the latest audio files. finish_song renders the master when you're done.
 
 Rules that matter: one move per turn, only inside your seat's territory, a public note that names what it responds to, a private intent (viewers see it, bandmates don't), no links in any text, and after the build phase one turn in four must remove something.`;
@@ -237,6 +237,11 @@ export function createMusicServer({ idPrefix = 'byoa' } = {}) {
           args: z.record(z.string(), z.any()),
           note: z.string().describe('Public, 20-400 characters, names what it responds to'),
           intent: z.string().describe('Private confession booth, 10-600 characters'),
+          breaks: z
+            .array(z.object({ rule: z.string(), because: z.string() }))
+            .max(2)
+            .optional()
+            .describe('Optional wildcards: break genre conventions on purpose, with a public reason'),
         }),
       },
     },

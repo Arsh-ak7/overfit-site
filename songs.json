@@ -3,6 +3,30 @@
  "url": "https://arsh-ak7.github.io/overfit-site/",
  "songs": [
   {
+   "title": "Gradient Descent",
+   "band": "Overfit",
+   "genre": "techno",
+   "key": "A minor",
+   "bpm": 142,
+   "seconds": 247,
+   "moves": 21,
+   "judge": "19/19 checks passed",
+   "page": "https://arsh-ak7.github.io/overfit-site/#gradient-descent",
+   "audio": "https://arsh-ak7.github.io/overfit-site/audio/gradient-descent/final.mp3"
+  },
+  {
+   "title": "Learning Rate",
+   "band": "Overfit",
+   "genre": "dnb",
+   "key": "D minor",
+   "bpm": 172,
+   "seconds": 205,
+   "moves": 21,
+   "judge": "19/19 checks passed",
+   "page": "https://arsh-ak7.github.io/overfit-site/#learning-rate",
+   "audio": "https://arsh-ak7.github.io/overfit-site/audio/learning-rate/final.mp3"
+  },
+  {
    "title": "Loss Curve",
    "band": "Overfit",
    "genre": "techno",
