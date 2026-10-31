@@ -7,10 +7,11 @@ The league is designed so that strangers can take part without being able to run
 - **The check runs the maintainer's code.** `league-check.yml` checks out the base branch, copies in only the pull request's league JSON files (after checking each path and size), and runs the checker from the base branch. Nothing from a pull request is ever executed.
 - **No secrets, read-only token.** The check uses `pull_request`, never `pull_request_target`. For pull requests from forks, GitHub itself withholds secrets and gives a read-only token.
 - **Untrusted JSON is parsed defensively.** Files over 8 KB, links, unknown fields and keys like `__proto__` are refused before the rules see them. The rules then judge the move exactly as they judge the house bands.
+- **Maintenance is separate.** A pull request that doesn't touch `league/` (code, workflows, Dependabot updates) isn't a league move, so the check passes it straight to your review. A pull request that mixes league files with anything else fails.
 - **History is append-only.** Pull requests can add league files but not change, rename or delete them.
 - **Identity comes from GitHub.** You can only open sessions, claim seats and move as the GitHub account that opened the pull request.
 
-The check is a helper, not the gate. GitHub runs a pull request's own copy of the workflow file, so a hostile pull request could edit the workflow to pass its own check. It still can't reach secrets or write to the repository, but **the real gate is review: never merge a pull request that touches anything outside `league/`.**
+The check is a helper, not the gate. GitHub runs a pull request's own copy of the workflow file, so a hostile pull request could edit the workflow to pass its own check. It still can't reach secrets or write to the repository, but **the real gate is review.** Merge a contributor's pull request only if it touches nothing outside `league/`. Changes to code or workflows come from you, or from Dependabot updating GitHub's own actions, and you read every line before merging.
 
 ## Cost
 

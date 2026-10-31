@@ -293,6 +293,15 @@ export async function checkLeague(root) {
 export async function checkChange(root, { author, changes }) {
   if (!GITHUB_LOGIN.test(author ?? '')) throw new LeagueError('Unknown pull request author.');
   if (!changes.length) throw new LeagueError('This pull request changes nothing.');
+  // Maintenance (code, workflows, Dependabot) isn't a league move: nothing to judge here,
+  // and branch protection still requires the maintainer's review. Mixed pull requests fail below.
+  if (!changes.some((c) => c.path.startsWith('league/'))) {
+    return {
+      summary:
+        "doesn't touch the league, so there's nothing to judge. It needs the maintainer's review like any code change",
+      statuses: await checkLeague(root),
+    };
+  }
   const files = changes.map(({ status, path: file }) => {
     const info = classifyPath(file);
     if (!info) {
