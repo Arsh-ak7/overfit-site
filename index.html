@@ -18,9 +18,10 @@
 <link rel="mask-icon" href="mask-icon.svg" color="#1a1917">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<link rel="preload" as="image" type="image/avif" href="art/ridge-desktop.avif" media="(min-aspect-ratio: 1/1)">
-<link rel="preload" as="image" type="image/avif" href="art/ridge-tablet.avif" media="(max-aspect-ratio: 1/1) and (min-width: 601px)">
-<link rel="preload" as="image" type="image/avif" href="art/ridge-phone.avif" media="(max-aspect-ratio: 1/1) and (max-width: 600px)">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-desktop.avif" imagesrcset="art/ridge-desktop.avif 1x, art/ridge-desktop@2x.avif 2x" media="(min-aspect-ratio: 1/1) and (not ((min-aspect-ratio: 2/1) and (min-width: 1100px)))">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-wide.avif" media="(min-aspect-ratio: 2/1) and (min-width: 1100px)">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-tablet.avif" imagesrcset="art/ridge-tablet.avif 1x, art/ridge-tablet@2x.avif 2x" media="(max-aspect-ratio: 1/1) and (min-width: 601px)">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-phone.avif" imagesrcset="art/ridge-phone.avif 1x, art/ridge-phone@2x.avif 2x" media="(max-aspect-ratio: 1/1) and (max-width: 600px)">
 <link rel="canonical" href="https://arsh-ak7.github.io/overfit-site/">
 <link rel="alternate" type="text/plain" title="llms.txt" href="llms.txt">
 <link rel="alternate" type="application/json" title="Songs" href="songs.json">
@@ -342,7 +343,7 @@ section[id] { scroll-margin-top: calc(var(--bar-h) + 24px); }
    card overlaps the band's last --overlap pixels, on the dark grass. The same painting serves both colour schemes: the
    hero always carries light text, and the paper below keeps each scheme's tokens. */
 .hero-band {
-  --art: image-set(url("art/ridge-desktop.avif") type("image/avif"), url("art/ridge-desktop.webp") type("image/webp"), url("art/ridge-desktop.jpg") type("image/jpeg"));
+  --art: image-set(url("art/ridge-desktop@2x.avif") type("image/avif") 2x, url("art/ridge-desktop.avif") type("image/avif") 1x, url("art/ridge-desktop@2x.webp") type("image/webp") 2x, url("art/ridge-desktop.webp") type("image/webp") 1x, url("art/ridge-desktop.jpg") type("image/jpeg") 1x);
   --art-fallback: url("art/ridge-desktop.jpg");
   --art-pos: 62% 100%;
   --band-pad: clamp(300px, 44vh, 440px);
@@ -352,7 +353,7 @@ section[id] { scroll-margin-top: calc(var(--bar-h) + 24px); }
 }
 @media (max-aspect-ratio: 1/1) {
   .hero-band {
-    --art: image-set(url("art/ridge-tablet.avif") type("image/avif"), url("art/ridge-tablet.webp") type("image/webp"), url("art/ridge-tablet.jpg") type("image/jpeg"));
+    --art: image-set(url("art/ridge-tablet@2x.avif") type("image/avif") 2x, url("art/ridge-tablet.avif") type("image/avif") 1x, url("art/ridge-tablet@2x.webp") type("image/webp") 2x, url("art/ridge-tablet.webp") type("image/webp") 1x, url("art/ridge-tablet.jpg") type("image/jpeg") 1x);
     --art-fallback: url("art/ridge-tablet.jpg");
     --art-pos: 50% 100%;
     --band-pad: clamp(320px, 36vh, 460px);
@@ -360,12 +361,25 @@ section[id] { scroll-margin-top: calc(var(--bar-h) + 24px); }
 }
 @media (max-aspect-ratio: 1/1) and (max-width: 600px) {
   .hero-band {
-    --art: image-set(url("art/ridge-phone.avif") type("image/avif"), url("art/ridge-phone.webp") type("image/webp"), url("art/ridge-phone.jpg") type("image/jpeg"));
+    --art: image-set(url("art/ridge-phone@2x.avif") type("image/avif") 2x, url("art/ridge-phone.avif") type("image/avif") 1x, url("art/ridge-phone@2x.webp") type("image/webp") 2x, url("art/ridge-phone.webp") type("image/webp") 1x, url("art/ridge-phone.jpg") type("image/jpeg") 1x);
     --art-fallback: url("art/ridge-phone.jpg");
     --art-pos: 50% 100%;
     --band-pad: clamp(340px, 54vh, 480px);
     --overlap: 40px;
   }
+}
+/* Ultrawide (21:9 monitors such as 3440x1440 and 2560x1080): a 2.4:1 painting with the scene extended sideways and the
+   cabin at x .80, right of the content column. No @2x: the master is 3948px wide, so 5120 would add no detail. The band grows with the viewport so the cover crop stays shallow. */
+@media (min-aspect-ratio: 2/1) and (min-width: 1100px) {
+  .hero-band {
+    --art: image-set(url("art/ridge-wide.avif") type("image/avif") 1x, url("art/ridge-wide.webp") type("image/webp") 1x, url("art/ridge-wide.jpg") type("image/jpeg") 1x);
+    --art-fallback: url("art/ridge-wide.jpg");
+    --art-pos: 85% 100%;
+    min-height: calc(72vh - var(--bar-h));
+  }
+  /* 115% wide and pushed left: the framing pole (x .27 of the painting) lands at about x .18, clear of the headline,
+     and the cabin stays at about x .79. */
+  .hero-band .art__img { background-size: 115% auto; }
 }
 .art { position: absolute; inset: calc(-1 * var(--bar-h)) 0 0 0; z-index: -1; overflow: hidden; background: #b98a62; }
 .art__img { position: absolute; inset: 0; background: var(--art-fallback) var(--art-pos) / cover no-repeat; }
