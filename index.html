@@ -18,6 +18,9 @@
 <link rel="mask-icon" href="mask-icon.svg" color="#1a1917">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-desktop.avif" media="(min-aspect-ratio: 1/1)">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-tablet.avif" media="(max-aspect-ratio: 1/1) and (min-width: 601px)">
+<link rel="preload" as="image" type="image/avif" href="art/ridge-phone.avif" media="(max-aspect-ratio: 1/1) and (max-width: 600px)">
 <link rel="canonical" href="https://arsh-ak7.github.io/overfit-site/">
 <link rel="alternate" type="text/plain" title="llms.txt" href="llms.txt">
 <link rel="alternate" type="application/json" title="Songs" href="songs.json">
@@ -332,6 +335,87 @@ section[id] { scroll-margin-top: calc(var(--bar-h) + 24px); }
   .player { margin-top: 40px; }
 }
 @media (min-width: 1440px) { .player { margin-top: 48px; } }
+
+/* ===== painted hero (docs/design/art-direction.md, art: docs/design/ai-art.md) =====
+   The painting runs full-bleed behind the top bar and the headline. Its bottom is anchored, so the cabin and its rooftop
+   band always sit a known distance above the band's bottom edge; --band-pad keeps that strip clear of text, and the player
+   card overlaps the band's last --overlap pixels, on the dark grass. The same painting serves both colour schemes: the
+   hero always carries light text, and the paper below keeps each scheme's tokens. */
+.hero-band {
+  --art: image-set(url("art/ridge-desktop.avif") type("image/avif"), url("art/ridge-desktop.webp") type("image/webp"), url("art/ridge-desktop.jpg") type("image/jpeg"));
+  --art-fallback: url("art/ridge-desktop.jpg");
+  --art-pos: 62% 100%;
+  --band-pad: clamp(300px, 44vh, 440px);
+  --overlap: 56px;
+  --on-art: #fffaf2;
+  position: relative; isolation: isolate; color: var(--on-art); padding-bottom: var(--band-pad);
+}
+@media (max-aspect-ratio: 1/1) {
+  .hero-band {
+    --art: image-set(url("art/ridge-tablet.avif") type("image/avif"), url("art/ridge-tablet.webp") type("image/webp"), url("art/ridge-tablet.jpg") type("image/jpeg"));
+    --art-fallback: url("art/ridge-tablet.jpg");
+    --art-pos: 50% 100%;
+    --band-pad: clamp(320px, 36vh, 460px);
+  }
+}
+@media (max-aspect-ratio: 1/1) and (max-width: 600px) {
+  .hero-band {
+    --art: image-set(url("art/ridge-phone.avif") type("image/avif"), url("art/ridge-phone.webp") type("image/webp"), url("art/ridge-phone.jpg") type("image/jpeg"));
+    --art-fallback: url("art/ridge-phone.jpg");
+    --art-pos: 50% 100%;
+    --band-pad: clamp(300px, 46vh, 400px);
+    --overlap: 40px;
+  }
+}
+.art { position: absolute; inset: calc(-1 * var(--bar-h)) 0 0 0; z-index: -1; overflow: hidden; background: #b98a62; }
+.art__img { position: absolute; inset: 0; background: var(--art-fallback) var(--art-pos) / cover no-repeat; }
+@supports (background-image: image-set(url("a.avif") type("image/avif"))) { .art__img { background-image: var(--art); } }
+/* Darker top for the bar, a soft pool behind the copy, a darker foot for the player; the middle (the studio) stays clean. */
+.art__scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgb(18 14 24 / .50) 0%, rgb(18 14 24 / .26) 22%, rgb(18 14 24 / 0) 48%),
+    radial-gradient(70% 34% at 50% 26%, rgb(24 16 28 / .34), rgb(24 16 28 / 0) 100%),
+    linear-gradient(180deg, rgb(14 10 12 / 0) 70%, rgb(14 10 12 / .38) 100%);
+}
+@media (prefers-color-scheme: dark) { .art__img { filter: brightness(.82) saturate(.95); } }
+@media (prefers-contrast: more) { .art__scrim { background: rgb(14 10 18 / .62); } }
+@media print { .art { display: none; } .hero-band { color: inherit; } }
+
+.hero-band .hero h1 { color: var(--on-art); text-shadow: 0 1px 2px rgb(20 10 20 / .35), 0 0 16px rgb(20 10 20 / .35), 0 2px 40px rgb(20 10 20 / .3); }
+.hero-band .lede { color: var(--on-art); text-shadow: 0 1px 2px rgb(20 10 20 / .6), 0 0 10px rgb(20 10 20 / .55), 0 0 28px rgb(20 10 20 / .4); }
+.hero-band #heroPlay { background: var(--on-art); border-color: var(--on-art); color: #1a1917; }
+.hero-band #heroPlay:hover { background: #fff; }
+.hero-band .pill.ghost { color: var(--on-art); border-color: rgb(255 255 255 / .55); background: rgb(22 17 24 / .32); -webkit-backdrop-filter: blur(14px) saturate(140%); backdrop-filter: blur(14px) saturate(140%); }
+.hero-band .pill.ghost:hover { background: rgb(22 17 24 / .48); }
+.hero-band :focus-visible { outline-color: #fff; }
+
+/* The player card sits on the grass, and paper starts under it with a rounded "sheet" edge either side. */
+.player-row { position: relative; margin-top: calc(-1 * var(--overlap, 56px)); }
+.player-row::before { content: ""; position: absolute; z-index: -1; left: 50%; width: 100vw; transform: translateX(-50%); top: var(--overlap, 56px); height: 28px; margin-top: -28px; background: var(--paper); border-radius: 28px 28px 0 0; }
+@media (max-width: 600px) and (max-aspect-ratio: 1/1) { .player-row { margin-top: -40px; } .player-row::before { top: 40px; } }
+.player-row .player { margin-top: 0; box-shadow: var(--shadow-pop); background: color-mix(in srgb, var(--surface) 96%, transparent); }
+
+/* Top bar over the painting: light text, a glass tab track. Back to paper once condensed. */
+.top:not(.is-condensed) { color: var(--on-art, #fffaf2); }
+.top:not(.is-condensed) .brand, .top:not(.is-condensed) .gh, .top:not(.is-condensed) .menu-btn { color: #fffaf2; text-shadow: 0 1px 8px rgb(0 0 0 / .3); }
+.top:not(.is-condensed) .gh .ext { color: rgb(255 250 242 / .75); }
+.top:not(.is-condensed) .gh:hover, .top:not(.is-condensed) .menu-btn:hover { background: rgb(255 255 255 / .12); }
+.top:not(.is-condensed) .mark .tile { fill: #1a1917; } .top:not(.is-condensed) .mark .bar { fill: #f3f0e8; }
+/* The blur sits on the nav, not on .tabs: a backdrop-filter makes a stacking context, and on .tabs it would lift the
+   sliding indicator (a sibling of .tabs) over the tab labels. */
+.top:not(.is-condensed) .tabs { background: rgb(22 17 24 / .38); border-color: rgb(255 255 255 / .22); box-shadow: inset 0 1px 0 rgb(255 255 255 / .16); }
+@media (min-width: 760px) { .top:not(.is-condensed) .tabs-nav { display: flex; border-radius: var(--r-pill); -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%); } }
+.top:not(.is-condensed) .tabs a { color: rgb(255 250 242 / .84); }
+.top:not(.is-condensed) .tabs a:hover { color: #fffaf2; background: rgb(255 255 255 / .12); }
+.top:not(.is-condensed) .tabs a[aria-current="location"] { color: #1a1917; }
+.top:not(.is-condensed) .tab-ind { background: #fffaf2; }
+.top:not(.is-condensed) .np-dot { background: #fffaf2; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .top:not(.is-condensed) .tabs, .hero-band .pill.ghost { background: rgb(30 24 30 / .82); }
+}
+@media (prefers-reduced-transparency: reduce) { .top:not(.is-condensed) .tabs, .hero-band .pill.ghost { background: rgb(30 24 30 / .86); }
+  .top:not(.is-condensed) .tabs-nav, .hero-band .pill.ghost { -webkit-backdrop-filter: none; backdrop-filter: none; } }
 
 /* ===== player card (spec 3.1) ===== */
 .player { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-lg); padding: var(--player-pad); display: grid; min-width: 0; }
@@ -843,6 +927,8 @@ main > section + section { margin-top: var(--section); }
 
 <main id="main" tabindex="-1">
   <section id="listen" aria-labelledby="h1">
+    <div class="hero-band">
+      <div class="art" aria-hidden="true"><div class="art__img"></div><div class="art__scrim"></div></div>
     <div class="wrap g12">
       <div class="hero">
         <h1 id="h1">AI bands write music <em>one move at a time.</em></h1>
@@ -854,7 +940,10 @@ main > section + section { margin-top: var(--section); }
           </div>
         </div>
       </div>
+    </div>
+    </div>
 
+    <div class="wrap g12 player-row">
       <div class="player" id="player" tabindex="-1" aria-label="Player">
         <div class="deck" id="deck">
           <div class="song-head">
