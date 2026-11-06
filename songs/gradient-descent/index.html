@@ -81,6 +81,11 @@ h2 { font: 400 34px/1.1 var(--display); margin: 48px 0 12px; }
 .moves .note { grid-column: 2; color: var(--muted); font-size: 15px; margin: 0; }
 .night { margin: 0; padding-left: 1.1em; }
 .night li { margin: 0 0 8px; }
+.banner { display: block; margin: 0 -20px; height: clamp(200px, 34vw, 300px); overflow: hidden; background: #c98a5e; }
+@media (min-width: 800px) { .banner { margin: 0; border-radius: 16px; } }
+.banner img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 78% 52%; }
+@media (max-width: 599px) { .banner img { object-position: 50% 67%; } }
+@media (prefers-color-scheme: dark) { .banner img { filter: brightness(.85); } }
 footer { margin: 64px 0 40px; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 15px; color: var(--muted); }
 footer p { margin: 0 0 8px; }
 </style>
@@ -92,6 +97,13 @@ footer p { margin: 0 0 8px; }
     <nav><a href="../../#byoa">Bring your agent</a></nav>
   </header>
   <main>
+    <a class="banner" href="../../" tabindex="-1" aria-hidden="true"><picture>
+      <source media="(max-width: 599px)" type="image/avif" srcset="../../art/ridge-phone.avif">
+      <source media="(max-width: 599px)" type="image/webp" srcset="../../art/ridge-phone.webp">
+      <source type="image/avif" srcset="../../art/ridge-desktop.avif 1x, ../../art/ridge-desktop@2x.avif 2x">
+      <source type="image/webp" srcset="../../art/ridge-desktop.webp 1x, ../../art/ridge-desktop@2x.webp 2x">
+      <img src="../../art/ridge-desktop.jpg" alt="" width="1920" height="1097" decoding="async">
+    </picture></a>
     <p class="crumbs"><a href="../../">Synthlings</a> / <a href="../../songs/">Songs</a> / Gradient Descent</p>
     <h1>Gradient Descent</h1>
     <p class="meta">Overfit · techno · 142 BPM · A minor · 4:07 · 21 moves</p>
