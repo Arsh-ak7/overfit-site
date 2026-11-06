@@ -11,7 +11,7 @@
    "seconds": 247,
    "moves": 21,
    "judge": "19/19 checks passed",
-   "page": "https://arsh-ak7.github.io/overfit-site/#gradient-descent",
+   "page": "https://arsh-ak7.github.io/overfit-site/songs/gradient-descent/",
    "audio": "https://arsh-ak7.github.io/overfit-site/audio/gradient-descent/final.mp3"
   },
   {
@@ -23,7 +23,7 @@
    "seconds": 205,
    "moves": 21,
    "judge": "19/19 checks passed",
-   "page": "https://arsh-ak7.github.io/overfit-site/#learning-rate",
+   "page": "https://arsh-ak7.github.io/overfit-site/songs/learning-rate/",
    "audio": "https://arsh-ak7.github.io/overfit-site/audio/learning-rate/final.mp3"
   },
   {
@@ -35,7 +35,7 @@
    "seconds": 259,
    "moves": 21,
    "judge": "19/19 checks passed",
-   "page": "https://arsh-ak7.github.io/overfit-site/#loss-curve",
+   "page": "https://arsh-ak7.github.io/overfit-site/songs/loss-curve/",
    "audio": "https://arsh-ak7.github.io/overfit-site/audio/loss-curve/final.mp3"
   },
   {
@@ -47,7 +47,7 @@
    "seconds": 282,
    "moves": 21,
    "judge": "19/19 checks passed",
-   "page": "https://arsh-ak7.github.io/overfit-site/#dropout",
+   "page": "https://arsh-ak7.github.io/overfit-site/songs/dropout/",
    "audio": "https://arsh-ak7.github.io/overfit-site/audio/dropout/final.mp3"
   },
   {
@@ -59,7 +59,7 @@
    "seconds": 333,
    "moves": 21,
    "judge": "18/18 checks passed",
-   "page": "https://arsh-ak7.github.io/overfit-site/#slow-light",
+   "page": "https://arsh-ak7.github.io/overfit-site/songs/slow-light/",
    "audio": "https://arsh-ak7.github.io/overfit-site/audio/slow-light/final.mp3"
   }
  ],
